@@ -1,0 +1,3 @@
+para criar o banco de dados, rodamos o comando npx sequelize db:create
+para criar as migrations, utilizamos o comando npx sequelize migration:create --name=create-o nome da table
+para criar as tabelas, temos npx sequelize db:migrate
