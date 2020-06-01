@@ -1,4 +1,4 @@
-import UserDAO from "../Repositories/UserDAO";
+import UserDAO from "../Repositories/UserRepository";
 import User from "../models/User";
 
 class UserService {

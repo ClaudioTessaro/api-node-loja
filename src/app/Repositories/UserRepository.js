@@ -1,6 +1,6 @@
 import User from "../models/User";
 
-class UserDAO {
+class UserRepository {
   async findUserByEmail(email) {
     const user = await User.findOne({
       where: { email },
@@ -21,4 +21,4 @@ class UserDAO {
   }
 }
 
-export default new UserDAO();
+export default new UserRepository();

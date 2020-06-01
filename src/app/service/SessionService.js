@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 
-import UserDAO from "../Repositories/UserDAO";
+import UserDAO from "../Repositories/UserRepository";
 import UserService from "./UserService";
 
 import authConfig from "../config/auth";

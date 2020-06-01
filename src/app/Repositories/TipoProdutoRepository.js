@@ -1,21 +1,29 @@
-const TipoProduto = require("../models/TipoProduto");
+import TipoProduto from "../models/TipoProduto";
 
-class TipoProdutoDAO {
+class TipoProdutoRepository {
   async buscarTodos() {
     try {
-      const tipos = await TipoProduto.findAll({ attributes: ["id", "nome"] });
-      return tipos;
+      return await TipoProduto.findAll();
     } catch (error) {
       throw new Error("Problema na base de dados");
     }
   }
 
-  async inserir(nome) {
+  async inserir(body) {
     try {
-      return TipoProduto.create({ nome });
+      return TipoProduto.create(body);
+    } catch (error) {
+      throw new Error("Problema na base de dados. Não foi inserido");
+    }
+  }
+
+  async buscarPorPk(id) {
+    try {
+      return TipoProduto.findByPk(id);
     } catch (error) {
       throw new Error("Problema na base de dados. Não foi inserido");
     }
   }
 }
-module.exports = new TipoProdutoDAO();
+
+export default new TipoProdutoRepository();
