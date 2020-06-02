@@ -13,8 +13,8 @@ class TipoProdutoService {
 
   async buscarTodos(req, res) {
     try {
-      const tipoProduto = await TipoProdutoRepository.buscarTodos();
-      return res.json(tipoProduto);
+      const response = await TipoProdutoRepository.buscarTodos();
+      return res.json(response);
     } catch (err) {
       throw res.status(400).json({ error: err.message });
     }
