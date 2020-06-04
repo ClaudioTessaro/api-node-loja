@@ -16,6 +16,10 @@ class TipoProdutoController {
   atualizarTipoProduto(req, res) {
     return TipoProdutoService.atualizarProduto(req, res);
   }
+
+  deletar(req, res) {
+    return TipoProdutoService.deletarProduto(req, res);
+  }
 }
 
 export default new TipoProdutoController();

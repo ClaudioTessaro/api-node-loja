@@ -50,6 +50,19 @@ class TipoProdutoService {
       throw new Error("O tipo de produto não existe");
     }
   }
+
+  async deletarProduto(req, res) {
+    try {
+      const tipoProduto = await TipoProdutoRepository.buscarPorPk(
+        req.params.id
+      );
+      this.validarTipoProduto(tipoProduto);
+      await TipoProdutoRepository.deletarProduto(tipoProduto);
+      return res.status(200).json({ message: "Deletado com sucesso" });
+    } catch (err) {
+      throw res.status(400).json({ error: err.message });
+    }
+  }
 }
 
 export default new TipoProdutoService();

@@ -18,4 +18,5 @@ routes.post("/tipoProduto", TipoProdutoController.cadastrarProduto);
 routes.get("/tipoProduto", TipoProdutoController.buscarTodos);
 routes.get("/tipoProduto/:id", TipoProdutoController.buscarTipoPorId);
 routes.put("/tipoProduto/:id", TipoProdutoController.atualizarTipoProduto);
+routes.delete("/tipoProduto/:id", TipoProdutoController.deletar);
 export default routes;

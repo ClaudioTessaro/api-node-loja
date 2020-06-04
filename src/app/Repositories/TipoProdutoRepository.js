@@ -3,7 +3,9 @@ import TipoProduto from "../models/TipoProduto";
 class TipoProdutoRepository {
   async buscarTodos() {
     try {
-      return await TipoProduto.findAll();
+      return await TipoProduto.findAll({
+        attributes: ["id", "nome"],
+      });
     } catch (error) {
       throw new Error("Problema na base de dados");
     }
@@ -20,6 +22,14 @@ class TipoProdutoRepository {
   async buscarPorPk(id) {
     try {
       return TipoProduto.findByPk(id);
+    } catch (error) {
+      throw new Error("Problema na base de dados. Não foi inserido");
+    }
+  }
+
+  async deletarProduto(body) {
+    try {
+      return body.destroy({ truncate: true, restartIdentity: true });
     } catch (error) {
       throw new Error("Problema na base de dados. Não foi inserido");
     }
