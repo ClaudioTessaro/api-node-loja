@@ -1,5 +1,5 @@
-import { Op, Sequelize } from "sequelize";
-import { parseISO } from "date-fns";
+import { Op } from "sequelize";
+import { parseISO, startOfDay, endOfDay } from "date-fns";
 import Produto from "../models/Produto";
 import TipoProduto from "../models/TipoProduto";
 
@@ -44,9 +44,33 @@ class ProdutoRepository {
     }
   }
 
-  async buscarTodos() {
+  async buscarTodos({ dataFim, dataInicio, nome, tipoProduto }) {
     try {
+      const filtro = [];
+      if (nome !== undefined) {
+        filtro.push({
+          nome: {
+            [Op.like]: `%${nome}%`,
+          },
+        });
+      }
+      if (tipoProduto !== undefined) {
+        filtro.push({
+          id_tipo_produto: tipoProduto,
+        });
+      }
+      if (dataInicio !== undefined && dataFim !== undefined) {
+        const fim = parseISO(dataFim);
+        const inicio = parseISO(dataInicio);
+        filtro.push({
+          data_da_compra: {
+            [Op.between]: [startOfDay(inicio), endOfDay(fim)],
+          },
+        });
+      }
+      console.log(filtro);
       const response = await Produto.findAll({
+        where: filtro,
         include: [
           {
             model: TipoProduto,
@@ -54,6 +78,7 @@ class ProdutoRepository {
             attributes: ["nome"],
           },
         ],
+        order: ["nome"],
       });
 
       return response;

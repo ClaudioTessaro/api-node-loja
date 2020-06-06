@@ -5,7 +5,12 @@ class ProdutoService {
     try {
       const { dataFim, dataInicio, nome, tipoProduto } = req.query;
 
-      const produtos = await ProdutoRepository.buscarTodos();
+      const produtos = await ProdutoRepository.buscarTodos({
+        dataFim,
+        dataInicio,
+        nome,
+        tipoProduto,
+      });
       return res.status(200).json(produtos);
     } catch (err) {
       throw res.status(400).json({ error: err.message });
@@ -20,7 +25,6 @@ class ProdutoService {
         quantidade,
         valorCompra,
         porcentagemLucro,
-
         dataDaCompra,
       } = req.body;
 
