@@ -59,7 +59,7 @@ class ProdutoRepository {
           id_tipo_produto: tipoProduto,
         });
       }
-      if (dataInicio !== undefined && dataFim !== undefined) {
+      if (dataInicio === undefined && dataFim === undefined) {
         const fim = parseISO(dataFim);
         const inicio = parseISO(dataInicio);
         filtro.push({
@@ -68,7 +68,6 @@ class ProdutoRepository {
           },
         });
       }
-      console.log(filtro);
       const response = await Produto.findAll({
         where: filtro,
         include: [
@@ -82,6 +81,13 @@ class ProdutoRepository {
       });
 
       return response;
+    } catch (error) {
+      throw new Error("Problema na base de dados. Não foi inserido");
+    }
+  }
+  async buscarTodosProdutos() {
+    try {
+      return await Produto.findAll();
     } catch (error) {
       throw new Error("Problema na base de dados. Não foi inserido");
     }
