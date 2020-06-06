@@ -1,3 +1,4 @@
-web: yarn sequelize
+web: 
+yarn sequelize
  yarn start
     
