@@ -6,17 +6,17 @@ class Produto extends Model {
       {
         nome: Sequelize.STRING,
 
-        marca_produto: Sequelize.STRING,
+        marcaProduto: { type: Sequelize.STRING, field: "marca_produto" },
 
         quantidade: Sequelize.INTEGER,
 
-        valor_venda: Sequelize.DOUBLE,
+        valorVenda: { type: Sequelize.DOUBLE, field: "valor_venda" },
 
-        valor_compra: Sequelize.DOUBLE,
+        valorCompra: { type: Sequelize.DOUBLE, field: "valor_compra" },
 
-        data_da_compra: Sequelize.DATE,
+        dataDaCompra: { type: Sequelize.DATE, field: "data_da_compra" },
 
-        quantidade_estoque: Sequelize.INTEGER,
+        tipoProduto: { type: Sequelize.INTEGER, field: "id_tipo_produto" },
       },
       {
         sequelize,
@@ -28,7 +28,7 @@ class Produto extends Model {
   static associate(models) {
     this.belongsTo(models.TipoProduto, {
       foreignKey: "id_tipo_produto",
-      as: "produto",
+      as: "tipo",
     });
   }
 }

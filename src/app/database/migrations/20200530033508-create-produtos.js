@@ -37,10 +37,7 @@ module.exports = {
         references: { model: "tipo_produtos", key: "id" },
         onUpdate: "CASCADE",
       },
-      quantidade_estoque: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-      },
+
       created_at: {
         type: Sequelize.DATE,
         allowNull: false,
