@@ -1,1 +1,3 @@
-web: yarn start
+web: yarn sequelize
+ yarn start
+    
