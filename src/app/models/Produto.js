@@ -8,7 +8,12 @@ class Produto extends Model {
 
         marcaProduto: { type: Sequelize.STRING, field: "marca_produto" },
 
-        quantidade: Sequelize.INTEGER,
+        quantidade: { type: Sequelize.INTEGER, field: "quantidade_de_compra" },
+
+        quantidadeDeEstoque: {
+          type: Sequelize.INTEGER,
+          field: "quantidade_de_estoque",
+        },
 
         valorVenda: { type: Sequelize.DOUBLE, field: "valor_venda" },
 

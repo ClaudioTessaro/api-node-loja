@@ -23,6 +23,8 @@ routes.delete("/tipoProduto/:id", TipoProdutoController.deletar);
 routes.post("/produto", ProdutoController.cadastrar);
 routes.get("/produto/:id", ProdutoController.buscarPorId);
 routes.delete("/produto/:id", ProdutoController.deletarPorId);
-routes.get("/produtos", ProdutoController.buscarPorParametros);
+routes.get("/produtos", ProdutoController.buscarPorFiltro);
 routes.put("/produto/:id", ProdutoController.atualizarProduto);
+routes.get("/todosProdutos", ProdutoController.buscarTodos);
+
 export default routes;

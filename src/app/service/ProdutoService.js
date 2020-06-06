@@ -1,16 +1,25 @@
+/* eslint-disable radix */
 import ProdutoRepository from "../Repositories/ProdutoRepository";
 
 class ProdutoService {
-  async buscarTodos(req, res) {
+  async buscarPorFiltro(req, res) {
     try {
-      const { dataFim, dataInicio, nome, tipoProduto } = req.query;
-
+      const { dataFim, dataInicio, nome, tipo } = req.query;
       const produtos = await ProdutoRepository.buscarTodos({
         dataFim,
         dataInicio,
         nome,
-        tipoProduto,
+        tipo,
       });
+      return res.status(200).json(produtos);
+    } catch (err) {
+      throw res.status(400).json({ error: err.message });
+    }
+  }
+
+  async buscarTodos(req, res) {
+    try {
+      const produtos = await ProdutoRepository.buscarTodosProdutos();
       return res.status(200).json(produtos);
     } catch (err) {
       throw res.status(400).json({ error: err.message });
@@ -30,7 +39,10 @@ class ProdutoService {
 
       const { tipoProduto } = req.body.tipoProduto;
 
+      const quant = this.calcularQuantidadeDePotes(quantidade);
+      const quantidadeDeEstoque = parseInt(quant);
       const valorVenda = this.calculaValorVendaProduto(
+        quantidade,
         valorCompra,
         porcentagemLucro
       );
@@ -43,18 +55,36 @@ class ProdutoService {
         tipoProduto,
         dataDaCompra,
         valorVenda,
+        quantidadeDeEstoque,
       });
-      return res.status(200).json(response);
+      return res.status(200).json({ response });
     } catch (err) {
       throw res.status(400).json({ error: err.message });
     }
   }
 
-  calculaValorVendaProduto(valorCompra, porcentagemLucro) {
-    return (
-      parseFloat(valorCompra) +
-      parseFloat(valorCompra) * (parseInt(porcentagemLucro, 10) / 100)
-    );
+  calculaValorVendaProduto(quantidadeDeCompra, valorCompra, porcentagemLucro) {
+    const tamanhoDoPote = 120;
+    let quantidade = parseInt(quantidadeDeCompra, 10);
+    if (quantidade < 1000) {
+      quantidade *= 1000;
+    }
+    const precoPorUnidade = parseFloat(valorCompra) / quantidade;
+    const valor = tamanhoDoPote * precoPorUnidade;
+
+    return valor + valor * (parseFloat(porcentagemLucro) / 100);
+  }
+
+  calcularQuantidadeDePotes(quantidade) {
+    const tamanhoDoPote = 120;
+    let unidade = parseInt(quantidade, 10) / 1000;
+    let quantidadeDePotes = 0;
+    if (unidade < 1) {
+      unidade = quantidade * 1000;
+    }
+    quantidadeDePotes += parseInt(unidade, 10) / tamanhoDoPote;
+
+    return quantidadeDePotes;
   }
 
   async buscarProdutoPorId(req, res) {
@@ -85,7 +115,6 @@ class ProdutoService {
         marcaProduto,
         quantidade,
         valorCompra,
-
         dataDaCompra,
         valorVenda,
       } = req.body;

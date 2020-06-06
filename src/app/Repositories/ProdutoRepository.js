@@ -12,6 +12,7 @@ class ProdutoRepository {
     tipoProduto,
     dataDaCompra,
     valorVenda,
+    quantidadeDeEstoque,
   }) {
     try {
       return Produto.create({
@@ -22,6 +23,7 @@ class ProdutoRepository {
         tipoProduto,
         dataDaCompra,
         valorVenda,
+        quantidadeDeEstoque,
       });
     } catch (error) {
       throw new Error("Problema na base de dados. Não foi inserido");
@@ -44,22 +46,28 @@ class ProdutoRepository {
     }
   }
 
-  async buscarTodos({ dataFim, dataInicio, nome, tipoProduto }) {
+  async buscarTodos({ dataFim, dataInicio, nome, tipo }) {
     try {
       const filtro = [];
-      if (nome !== undefined) {
+      if (nome) {
         filtro.push({
           nome: {
             [Op.like]: `%${nome}%`,
           },
         });
       }
-      if (tipoProduto !== undefined) {
+      if (tipo) {
         filtro.push({
-          id_tipo_produto: tipoProduto,
+          id_tipo_produto: tipo,
         });
       }
-      if (dataInicio === undefined && dataFim === undefined) {
+
+      if (
+        dataInicio !== undefined &&
+        dataInicio &&
+        dataFim !== undefined &&
+        dataFim
+      ) {
         const fim = parseISO(dataFim);
         const inicio = parseISO(dataInicio);
         filtro.push({
@@ -85,9 +93,19 @@ class ProdutoRepository {
       throw new Error("Problema na base de dados. Não foi inserido");
     }
   }
+
   async buscarTodosProdutos() {
     try {
-      return await Produto.findAll();
+      return await Produto.findAll({
+        include: [
+          {
+            model: TipoProduto,
+            as: "tipo",
+            attributes: ["nome"],
+          },
+        ],
+        order: ["nome"],
+      });
     } catch (error) {
       throw new Error("Problema na base de dados. Não foi inserido");
     }

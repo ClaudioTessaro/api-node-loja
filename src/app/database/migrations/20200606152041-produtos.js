@@ -15,7 +15,11 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: true,
       },
-      quantidade: {
+      quantidade_de_compra: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
+      quantidade_de_estoque: {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
