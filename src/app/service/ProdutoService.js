@@ -1,5 +1,6 @@
 /* eslint-disable radix */
 import ProdutoRepository from "../Repositories/ProdutoRepository";
+import TipoProdutoRepository from "../Repositories/TipoProdutoRepository";
 
 class ProdutoService {
   async buscarPorFiltro(req, res) {
@@ -35,16 +36,22 @@ class ProdutoService {
         valorCompra,
         porcentagemLucro,
         dataDaCompra,
+        valorPote,
+        frete,
       } = req.body;
 
       const { tipoProduto } = req.body.tipoProduto;
+      const tipo = await TipoProdutoRepository.buscarPorPk(tipoProduto);
 
-      const quant = this.calcularQuantidadeDePotes(quantidade);
+      const quant = this.calcularQuantidadeDePotes(quantidade, tipo);
       const quantidadeDeEstoque = parseInt(quant);
       const valorVenda = this.calculaValorVendaProduto(
         quantidade,
         valorCompra,
-        porcentagemLucro
+        porcentagemLucro,
+        tipo,
+        valorPote,
+        frete
       );
 
       const response = await ProdutoRepository.cadastrarProduto({
@@ -63,26 +70,46 @@ class ProdutoService {
     }
   }
 
-  calculaValorVendaProduto(quantidadeDeCompra, valorCompra, porcentagemLucro) {
+  calculaValorVendaProduto(
+    quantidadeDeCompra,
+    valorCompra,
+    porcentagemLucro,
+    tipoProduto,
+    valorPote,
+    frete
+  ) {
     const tamanhoDoPote = 120;
+    let valor = 0;
     let quantidade = parseInt(quantidadeDeCompra, 10);
-    if (quantidade < 1000) {
-      quantidade *= 1000;
+    if (tipoProduto.nome === "Escova") {
+      valor += parseFloat(valorCompra) / quantidade;
+      valor +=
+        parseFloat(frete) / quantidade +
+        valor * (parseFloat(porcentagemLucro) / 100);
+    } else {
+      if (quantidade < 1000) {
+        quantidade *= 1000;
+      }
+      const precoPorUnidade = parseFloat(valorCompra) / quantidade;
+      valor += parseFloat(valorPote) + tamanhoDoPote * precoPorUnidade;
+      valor += parseFloat(frete) + valor * (parseFloat(porcentagemLucro) / 100);
     }
-    const precoPorUnidade = parseFloat(valorCompra) / quantidade;
-    const valor = tamanhoDoPote * precoPorUnidade;
 
-    return valor + valor * (parseFloat(porcentagemLucro) / 100);
+    return valor;
   }
 
-  calcularQuantidadeDePotes(quantidade) {
-    const tamanhoDoPote = 120;
-    let unidade = parseInt(quantidade, 10) / 1000;
+  calcularQuantidadeDePotes(quantidade, tipoProduto) {
     let quantidadeDePotes = 0;
-    if (unidade < 1) {
-      unidade = quantidade * 1000;
+    if (tipoProduto.nome !== "Escova") {
+      const tamanhoDoPote = 120;
+      if (quantidade < 1000) {
+        quantidade *= 1000;
+      }
+      const unidade = parseInt(quantidade, 10);
+      quantidadeDePotes += parseInt(unidade, 10) / tamanhoDoPote;
+    } else {
+      quantidadeDePotes += quantidade;
     }
-    quantidadeDePotes += parseInt(unidade, 10) / tamanhoDoPote;
 
     return quantidadeDePotes;
   }
@@ -115,13 +142,29 @@ class ProdutoService {
         marcaProduto,
         quantidade,
         valorCompra,
+        porcentagemLucro,
         dataDaCompra,
-        valorVenda,
+        valorPote,
+        frete,
       } = req.body;
 
       const { tipoProduto } = req.body.tipoProduto;
 
       const produto = await ProdutoRepository.buscarProdutoPorId(req.params.id);
+
+      const tipo = await TipoProdutoRepository.buscarPorPk(tipoProduto);
+
+      const quant = this.calcularQuantidadeDePotes(quantidade, tipo);
+      const quantidadeDeEstoque = parseInt(quant);
+      const valorVenda = this.calculaValorVendaProduto(
+        quantidade,
+        valorCompra,
+        porcentagemLucro,
+        tipo,
+        valorPote,
+        frete
+      );
+
       const response = await produto.update({
         nome,
         marcaProduto,
@@ -130,6 +173,7 @@ class ProdutoService {
         tipoProduto,
         dataDaCompra,
         valorVenda,
+        quantidadeDeEstoque,
       });
       return res.status(200).json(response);
     } catch (err) {
