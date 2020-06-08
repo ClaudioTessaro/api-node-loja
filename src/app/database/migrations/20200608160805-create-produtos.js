@@ -31,6 +31,10 @@ module.exports = {
         type: Sequelize.DOUBLE,
         allowNull: false,
       },
+      lucro: {
+        type: Sequelize.DOUBLE,
+        allowNull: false,
+      },
       data_da_compra: {
         type: Sequelize.DATE,
         allowNull: false,

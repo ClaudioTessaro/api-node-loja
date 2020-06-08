@@ -53,7 +53,6 @@ class ProdutoService {
         valorPote,
         frete
       );
-
       const response = await ProdutoRepository.cadastrarProduto({
         nome,
         marcaProduto,
@@ -63,6 +62,7 @@ class ProdutoService {
         dataDaCompra,
         valorVenda,
         quantidadeDeEstoque,
+        porcentagemLucro,
       });
       return res.status(200).json({ response });
     } catch (err) {
@@ -84,8 +84,9 @@ class ProdutoService {
     if (tipoProduto.nome === "Escova") {
       valor += parseFloat(valorCompra) / quantidade;
       valor +=
-        parseFloat(frete) / quantidade +
+        parseFloat(frete !== "" ? frete : 1) / quantidade +
         valor * (parseFloat(porcentagemLucro) / 100);
+      console.log(frete);
     } else {
       if (quantidade < 1000) {
         quantidade *= 1000;
@@ -174,6 +175,7 @@ class ProdutoService {
         dataDaCompra,
         valorVenda,
         quantidadeDeEstoque,
+        porcentagemLucro,
       });
       return res.status(200).json(response);
     } catch (err) {

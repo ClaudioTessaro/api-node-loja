@@ -22,6 +22,7 @@ module.exports = {
       },
       admin: {
         type: Sequelize.BOOLEAN,
+
         defaultValue: false,
         allowNull: false,
       },
@@ -36,7 +37,7 @@ module.exports = {
     });
   },
 
-  down: (queryInterface) => {
+  down: queryInterface => {
     return queryInterface.dropTable("users");
   },
 };

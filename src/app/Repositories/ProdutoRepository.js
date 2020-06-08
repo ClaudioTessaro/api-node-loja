@@ -13,6 +13,7 @@ class ProdutoRepository {
     dataDaCompra,
     valorVenda,
     quantidadeDeEstoque,
+    porcentagemLucro,
   }) {
     try {
       return Produto.create({
@@ -24,6 +25,7 @@ class ProdutoRepository {
         dataDaCompra,
         valorVenda,
         quantidadeDeEstoque,
+        porcentagemLucro,
       });
     } catch (error) {
       throw new Error("Problema na base de dados. Não foi inserido");
