@@ -21,9 +21,8 @@ class Produto extends Model {
 
         dataDaCompra: { type: Sequelize.DATE, field: "data_da_compra" },
 
-        tipoProduto: { type: Sequelize.INTEGER, field: "id_tipo_produto" },
-
         porcentagemLucro: { type: Sequelize.DOUBLE, field: "lucro" },
+        tipoProduto: { type: Sequelize.INTEGER, field: "id_tipo_produto" },
       },
       {
         sequelize,
