@@ -86,7 +86,6 @@ class ProdutoService {
       valor +=
         parseFloat(frete !== "" ? frete : 1) / quantidade +
         valor * (parseFloat(porcentagemLucro) / 100);
-      console.log(frete);
     } else {
       if (quantidade < 1000) {
         quantidade *= 1000;
