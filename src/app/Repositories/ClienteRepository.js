@@ -1,3 +1,4 @@
+import { Op } from "sequelize";
 import Cliente from "../models/Cliente";
 
 class ClienteRepository {
@@ -19,7 +20,25 @@ class ClienteRepository {
 
   async buscarClientePorNome(nome) {
     try {
-      return await Cliente.findOne({ where: { nome } });
+      return await Cliente.findOne({
+        where: {
+          nome,
+        },
+      });
+    } catch (err) {
+      throw new Error("Problema na base de dados");
+    }
+  }
+
+  async buscarClienteClientePorNome(nome) {
+    try {
+      return await Cliente.findAll({
+        where: {
+          nome: {
+            [Op.like]: `%${nome}%`,
+          },
+        },
+      });
     } catch (err) {
       throw new Error("Problema na base de dados");
     }

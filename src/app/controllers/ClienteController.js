@@ -24,6 +24,10 @@ class ClienteController {
   buscarClientePorNomeData(req, res) {
     return ClienteService.buscarClientePorNomeData(req, res);
   }
+
+  buscarClientePorNome(req, res) {
+    return ClienteService.buscarClientePorNome(req, res);
+  }
 }
 
 export default new ClienteController();

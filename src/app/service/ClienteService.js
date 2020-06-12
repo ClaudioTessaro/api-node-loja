@@ -69,6 +69,18 @@ class ClienteService {
       throw res.status(400).json({ error: err.message });
     }
   }
+
+  async buscarClientePorNome(req, res) {
+    try {
+      const cliente = await ClienteRepository.buscarClienteClientePorNome(
+        req.params.nomeCliente
+      );
+
+      return res.status(200).json(cliente);
+    } catch (err) {
+      throw res.status(400).json({ error: err.message });
+    }
+  }
 }
 
 export default new ClienteService();

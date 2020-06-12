@@ -36,6 +36,7 @@ routes.get(
   ClienteController.buscarClientePorNomeData
 );
 routes.get("/cliente/:id", ClienteController.buscarClientePorId);
+routes.get("/nomeCliente/:nomeCliente", ClienteController.buscarClientePorNome);
 routes.put("/cliente/:id", ClienteController.atualizaCliente);
 routes.delete("/cliente/:id", ClienteController.deletarCliente);
 
