@@ -40,6 +40,7 @@ routes.put("/cliente/:id", ClienteController.atualizaCliente);
 routes.delete("/cliente/:id", ClienteController.deletarCliente);
 
 routes.post("/venda", ClienteProdutoController.insereVenda);
+routes.delete("/venda/:id", ClienteProdutoController.deletaVendaPorId);
 routes.get("/venda/:id", ClienteProdutoController.buscarVendaPorIdCliente);
 
 export default routes;

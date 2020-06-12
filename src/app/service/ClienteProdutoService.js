@@ -58,6 +58,29 @@ class ClienteProdutoService {
       parseInt(produto.quantidadeDeEstoque, 10) - parseInt(quantidade, 10);
     await produto.update({ quantidadeDeEstoque });
   }
+
+  async deletaVendaPorId(req, res) {
+    try {
+      const venda = await ClienteProdutoRepository.buscarVendaPorId(
+        req.params.id
+      );
+      this.atualizarEstoqueQuandoDeletado(
+        venda.quantidadeDeCompra,
+        venda.idProduto
+      );
+      await ClienteProdutoRepository.deletarVenda(venda);
+      return res.status(200).json({ message: `Venda deletada com sucesso` });
+    } catch (err) {
+      throw res.status(400).json({ error: err.message });
+    }
+  }
+
+  async atualizarEstoqueQuandoDeletado(quantidade, idProduto) {
+    const produto = await ProdutoRepository.buscarProdutoPorId(idProduto);
+    const quantidadeDeEstoque =
+      parseInt(produto.quantidadeDeEstoque, 10) + parseInt(quantidade, 10);
+    await produto.update({ quantidadeDeEstoque });
+  }
 }
 
 export default new ClienteProdutoService();

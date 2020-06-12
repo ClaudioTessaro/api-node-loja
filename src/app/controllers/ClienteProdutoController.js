@@ -8,6 +8,10 @@ class ClienteProdutoController {
   buscarVendaPorIdCliente(req, res) {
     return ClienteProdutoService.buscarVendaPorIdCliente(req, res);
   }
+
+  deletaVendaPorId(req, res) {
+    return ClienteProdutoService.deletaVendaPorId(req, res);
+  }
 }
 
 export default new ClienteProdutoController();

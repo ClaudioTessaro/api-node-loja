@@ -70,6 +70,22 @@ class ClienteProdutoRepository {
       throw new Error("Problema na base de dados");
     }
   }
+
+  async buscarVendaPorId(id) {
+    try {
+      return await ClienteProduto.findByPk(id);
+    } catch (err) {
+      throw new Error("Problema na base de dados");
+    }
+  }
+
+  async deletarVenda(body) {
+    try {
+      return await body.destroy({ truncate: true, restartIdentity: true });
+    } catch (err) {
+      throw new Error("Problema na base de dados");
+    }
+  }
 }
 
 export default new ClienteProdutoRepository();
