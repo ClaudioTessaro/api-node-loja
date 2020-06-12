@@ -4,6 +4,8 @@ import UserController from "./app/controllers/UserController";
 import SessionController from "./app/controllers/SessionController";
 import TipoProdutoController from "./app/controllers/TipoProdutoController";
 import ProdutoController from "./app/controllers/ProdutoController";
+import ClienteProdutoController from "./app/controllers/ClienteProdutoController";
+import ClienteController from "./app/controllers/ClienteController";
 import authMiddleware from "./app/middlewares/auth";
 
 const routes = new Router();
@@ -26,5 +28,18 @@ routes.delete("/produto/:id", ProdutoController.deletarPorId);
 routes.get("/produtos", ProdutoController.buscarPorFiltro);
 routes.put("/produto/:id", ProdutoController.atualizarProduto);
 routes.get("/todosProdutos", ProdutoController.buscarTodos);
+
+routes.post("/cliente", ClienteController.insereCliente);
+routes.get("/clientes", ClienteController.buscarClientes);
+routes.get(
+  "/cliente/:nomeCliente/:dataCompra",
+  ClienteController.buscarClientePorNomeData
+);
+routes.get("/cliente/:id", ClienteController.buscarClientePorId);
+routes.put("/cliente/:id", ClienteController.atualizaCliente);
+routes.delete("/cliente/:id", ClienteController.deletarCliente);
+
+routes.post("/venda", ClienteProdutoController.insereVenda);
+routes.get("/venda/:id", ClienteProdutoController.buscarVendaPorIdCliente);
 
 export default routes;

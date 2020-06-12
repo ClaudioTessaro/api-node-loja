@@ -112,6 +112,14 @@ class ProdutoRepository {
       throw new Error("Problema na base de dados. Não foi inserido");
     }
   }
+
+  async buscarProdutoPorNome(nome) {
+    try {
+      return await Produto.findOne({ where: { nome } });
+    } catch (err) {
+      throw new Error("Problema na base de dados");
+    }
+  }
 }
 
 export default new ProdutoRepository();
