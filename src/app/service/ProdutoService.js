@@ -81,7 +81,7 @@ class ProdutoService {
     const tamanhoDoPote = 120;
     let valor = 0;
     let quantidade = parseInt(quantidadeDeCompra, 10);
-    if (tipoProduto.nome === "Escova") {
+    if (tipoProduto.nome !== "Oleo Vegetal") {
       valor += parseFloat(valorCompra) / quantidade;
       valor +=
         parseFloat(frete !== "" ? frete : 1) / quantidade +
@@ -100,7 +100,7 @@ class ProdutoService {
 
   calcularQuantidadeDePotes(quantidade, tipoProduto) {
     let quantidadeDePotes = 0;
-    if (tipoProduto.nome !== "Escova") {
+    if (tipoProduto.nome === "Oleo Vegetal") {
       const tamanhoDoPote = 120;
       if (quantidade < 1000) {
         quantidade *= 1000;
@@ -146,6 +146,7 @@ class ProdutoService {
         dataDaCompra,
         valorPote,
         frete,
+        valorDaVenda,
       } = req.body;
 
       const { tipoProduto } = req.body.tipoProduto;
@@ -156,14 +157,20 @@ class ProdutoService {
 
       const quant = this.calcularQuantidadeDePotes(quantidade, tipo);
       const quantidadeDeEstoque = parseInt(quant);
-      const valorVenda = this.calculaValorVendaProduto(
-        quantidade,
-        valorCompra,
-        porcentagemLucro,
-        tipo,
-        valorPote,
-        frete
-      );
+      let valorVenda;
+      console.log(valorDaVenda);
+      if (!valorDaVenda) {
+        valorVenda = this.calculaValorVendaProduto(
+          quantidade,
+          valorCompra,
+          porcentagemLucro,
+          tipo,
+          valorPote,
+          frete
+        );
+      } else {
+        valorVenda = valorDaVenda;
+      }
 
       const response = await produto.update({
         nome,
