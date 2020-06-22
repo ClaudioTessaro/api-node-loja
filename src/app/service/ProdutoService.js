@@ -34,10 +34,11 @@ class ProdutoService {
         marcaProduto,
         quantidade,
         valorCompra,
-        porcentagemLucro,
+        porcentagemDeLucro,
         dataDaCompra,
         valorPote,
         frete,
+        valorDaVenda,
       } = req.body;
 
       const { tipoProduto } = req.body.tipoProduto;
@@ -45,14 +46,21 @@ class ProdutoService {
 
       const quant = this.calcularQuantidadeDePotes(quantidade, tipo);
       const quantidadeDeEstoque = parseInt(quant);
-      const valorVenda = this.calculaValorVendaProduto(
-        quantidade,
-        valorCompra,
-        porcentagemLucro,
-        tipo,
-        valorPote,
-        frete
-      );
+
+      const valorVenda =
+        valorDaVenda ||
+        this.calculaValorVendaProduto(
+          quantidade,
+          valorCompra,
+          porcentagemDeLucro,
+          tipo,
+          valorPote,
+          frete
+        );
+      const porcentagemLucro =
+        porcentagemDeLucro ||
+        this.calcularPorcentagemDeLucro(valorCompra, valorVenda, quantidade);
+
       const response = await ProdutoRepository.cadastrarProduto({
         nome,
         marcaProduto,
@@ -70,6 +78,14 @@ class ProdutoService {
     }
   }
 
+  calcularPorcentagemDeLucro(valorCompra, valorVenda, quantidade) {
+    return parseFloat(
+      ((parseFloat(valorVenda) - parseFloat(valorCompra / quantidade)) /
+        parseFloat(valorCompra / quantidade)) *
+        100
+    ).toFixed(2);
+  }
+
   calculaValorVendaProduto(
     quantidadeDeCompra,
     valorCompra,
@@ -81,10 +97,11 @@ class ProdutoService {
     const tamanhoDoPote = 120;
     let valor = 0;
     let quantidade = parseInt(quantidadeDeCompra, 10);
+    const valorFrete = frete !== "" ? frete : 0.001;
     if (tipoProduto.nome !== "Oleo Vegetal") {
       valor += parseFloat(valorCompra) / quantidade;
       valor +=
-        parseFloat(frete !== "" ? frete : 1) / quantidade +
+        parseFloat(valorFrete) / quantidade +
         valor * (parseFloat(porcentagemLucro) / 100);
     } else {
       if (quantidade < 1000) {
@@ -94,8 +111,7 @@ class ProdutoService {
       valor += parseFloat(valorPote) + tamanhoDoPote * precoPorUnidade;
       valor += parseFloat(frete) + valor * (parseFloat(porcentagemLucro) / 100);
     }
-
-    return valor;
+    return parseFloat(valor).toFixed(2);
   }
 
   calcularQuantidadeDePotes(quantidade, tipoProduto) {
@@ -142,7 +158,7 @@ class ProdutoService {
         marcaProduto,
         quantidade,
         valorCompra,
-        porcentagemLucro,
+        porcentagemDeLucro,
         dataDaCompra,
         valorPote,
         frete,
@@ -157,20 +173,26 @@ class ProdutoService {
 
       const quant = this.calcularQuantidadeDePotes(quantidade, tipo);
       const quantidadeDeEstoque = parseInt(quant);
-      let valorVenda;
-      console.log(valorDaVenda);
-      if (!valorDaVenda) {
-        valorVenda = this.calculaValorVendaProduto(
-          quantidade,
-          valorCompra,
-          porcentagemLucro,
-          tipo,
-          valorPote,
-          frete
-        );
-      } else {
-        valorVenda = valorDaVenda;
-      }
+
+      const valorVenda =
+        valorDaVenda === produto.valorVenda
+          ? valorDaVenda
+          : this.calculaValorVendaProduto(
+              quantidade,
+              valorCompra,
+              porcentagemDeLucro,
+              tipo,
+              valorPote,
+              frete
+            );
+      const porcentagemLucro =
+        porcentagemDeLucro === produto.porcentagemLucro
+          ? porcentagemDeLucro
+          : this.calcularPorcentagemDeLucro(
+              valorCompra,
+              valorVenda,
+              quantidade
+            );
 
       const response = await produto.update({
         nome,
