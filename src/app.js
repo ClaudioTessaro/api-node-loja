@@ -11,8 +11,17 @@ import "./app/database";
 class App {
   constructor() {
     this.server = express();
+    this.server.use(Sentry.Handlers.requestHandler());
     this.middleware();
+    this.exception();
     this.routes();
+    this.exceptionHandler();
+  }
+
+  exception() {
+    this.server.use(async (error, req, res, next) => {
+      res.status(error.httpStatusCode).json(error);
+    });
   }
 
   middleware() {

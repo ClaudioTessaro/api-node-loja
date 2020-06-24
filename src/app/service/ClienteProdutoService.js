@@ -32,7 +32,7 @@ class ClienteProdutoService {
         message: "Venda inserida com sucesso",
       });
     } catch (error) {
-      throw res.status(400).json({ error: error.message });
+      throw res.status(400).json({ message: error.message });
     }
   }
 
@@ -43,7 +43,7 @@ class ClienteProdutoService {
       );
       return res.status(200).json(response);
     } catch (error) {
-      throw res.status(400).json({ error: error.message });
+      throw res.status(400).json({ message: error.message });
     }
   }
 

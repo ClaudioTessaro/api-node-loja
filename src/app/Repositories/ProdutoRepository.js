@@ -48,7 +48,7 @@ class ProdutoRepository {
     }
   }
 
-  async buscarTodos({ dataFim, dataInicio, nome, tipo }) {
+  async buscarTodos({ dataFim, dataInicio, nome, tipo, limit, page }, res) {
     try {
       const filtro = [];
       if (nome) {
@@ -63,7 +63,6 @@ class ProdutoRepository {
           id_tipo_produto: tipo,
         });
       }
-
       if (
         dataInicio !== undefined &&
         dataInicio &&
@@ -78,6 +77,7 @@ class ProdutoRepository {
           },
         });
       }
+      console.log(page);
       const response = await Produto.findAll({
         where: filtro,
         include: [
@@ -88,9 +88,20 @@ class ProdutoRepository {
           },
         ],
         order: ["nome"],
+        limit,
+        offset: (page - 1) * limit,
       });
-
-      return response;
+      const produtos = await Produto.findAll({
+        where: filtro,
+        include: [
+          {
+            model: TipoProduto,
+            as: "tipo",
+            attributes: ["nome"],
+          },
+        ],
+      });
+      return { response, produtos };
     } catch (error) {
       throw new Error("Problema na base de dados. Não foi inserido");
     }
@@ -119,6 +130,11 @@ class ProdutoRepository {
     } catch (err) {
       throw new Error("Problema na base de dados");
     }
+  }
+
+  async verificarSeExisteVinculoComProduto(tipoProduto) {
+    const response = await Produto.findOne({ where: { tipoProduto } });
+    return response;
   }
 }
 

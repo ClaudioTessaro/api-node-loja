@@ -5,7 +5,9 @@ class ClienteService {
   async insereCliente(req, res) {
     try {
       const response = await ClienteRepository.insereCliente(req.body);
-      return res.status(200).json(response);
+      return res
+        .status(200)
+        .json({ response, message: "Cliente Cadastrado com sucesso" });
     } catch (err) {
       throw res.status(400).json({ error: err.message });
     }

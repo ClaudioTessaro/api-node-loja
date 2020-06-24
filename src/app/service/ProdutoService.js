@@ -1,18 +1,27 @@
 /* eslint-disable radix */
 import ProdutoRepository from "../Repositories/ProdutoRepository";
 import TipoProdutoRepository from "../Repositories/TipoProdutoRepository";
+import UtilService from "./UtilService";
 
 class ProdutoService {
   async buscarPorFiltro(req, res) {
     try {
-      const { dataFim, dataInicio, nome, tipo } = req.query;
-      const produtos = await ProdutoRepository.buscarTodos({
-        dataFim,
-        dataInicio,
-        nome,
-        tipo,
-      });
-      return res.status(200).json(produtos);
+      const { dataFim, dataInicio, nome, tipo, limit, page } = req.query;
+      const { response, produtos } = await ProdutoRepository.buscarTodos(
+        {
+          dataFim,
+          dataInicio,
+          nome,
+          tipo,
+          limit,
+          page,
+        },
+        res
+      );
+      res.setHeader("X-Total-Count", produtos.length);
+      res.setHeader("Access-Control-Expose-Headers", "X-Total-Count");
+      UtilService.consultarSeExisteRetorno(response);
+      return res.status(200).json(response);
     } catch (err) {
       throw res.status(400).json({ error: err.message });
     }
@@ -21,6 +30,7 @@ class ProdutoService {
   async buscarTodos(req, res) {
     try {
       const produtos = await ProdutoRepository.buscarTodosProdutos();
+      UtilService.consultarSeExisteRetorno(produtos);
       return res.status(200).json(produtos);
     } catch (err) {
       throw res.status(400).json({ error: err.message });
@@ -72,7 +82,9 @@ class ProdutoService {
         quantidadeDeEstoque,
         porcentagemLucro,
       });
-      return res.status(200).json({ response });
+      return res
+        .status(200)
+        .json({ response, message: `${nome} inserido com sucesso` });
     } catch (err) {
       throw res.status(400).json({ error: err.message });
     }
@@ -135,6 +147,7 @@ class ProdutoService {
       const response = await ProdutoRepository.buscarProdutoPorId(
         req.params.id
       );
+      UtilService.consultarSeExisteRetorno(response);
       return res.status(200).json(response);
     } catch (err) {
       throw res.status(400).json({ error: err.message });
@@ -144,6 +157,7 @@ class ProdutoService {
   async deletarProdutoPorId(req, res) {
     try {
       const produto = await ProdutoRepository.buscarProdutoPorId(req.params.id);
+      UtilService.consultarSeExisteRetorno(produto);
       await ProdutoRepository.deleteProduto(produto);
       return res.status(200).json({ message: "Deletado com sucesso" });
     } catch (err) {
@@ -173,9 +187,8 @@ class ProdutoService {
 
       const quant = this.calcularQuantidadeDePotes(quantidade, tipo);
       const quantidadeDeEstoque = parseInt(quant);
-
       const valorVenda =
-        valorDaVenda === produto.valorVenda
+        valorDaVenda.toString() !== produto.valorVenda.toString()
           ? valorDaVenda
           : this.calculaValorVendaProduto(
               quantidade,
@@ -186,14 +199,13 @@ class ProdutoService {
               frete
             );
       const porcentagemLucro =
-        porcentagemDeLucro === produto.porcentagemLucro
+        porcentagemDeLucro.toString() !== produto.porcentagemLucro.toString()
           ? porcentagemDeLucro
           : this.calcularPorcentagemDeLucro(
               valorCompra,
               valorVenda,
               quantidade
             );
-
       const response = await produto.update({
         nome,
         marcaProduto,
@@ -205,7 +217,9 @@ class ProdutoService {
         quantidadeDeEstoque,
         porcentagemLucro,
       });
-      return res.status(200).json(response);
+      return res
+        .status(200)
+        .json({ response, message: `${nome} atualizado com sucesso` });
     } catch (err) {
       throw res.status(400).json({ error: err.message });
     }

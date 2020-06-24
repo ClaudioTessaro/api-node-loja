@@ -1,7 +1,19 @@
 import TipoProduto from "../models/TipoProduto";
 
 class TipoProdutoRepository {
-  async buscarTodos() {
+  async buscarTodos({ limit, page }) {
+    try {
+      return await TipoProduto.findAll({
+        attributes: ["id", "nome"],
+        limit,
+        offset: (page - 1) * limit,
+      });
+    } catch (error) {
+      throw new Error("Problema na base de dados");
+    }
+  }
+
+  async totalTipo() {
     try {
       return await TipoProduto.findAll({
         attributes: ["id", "nome"],
