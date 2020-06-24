@@ -1,7 +1,7 @@
 import TipoProduto from "../models/TipoProduto";
 
 class TipoProdutoRepository {
-  async buscarTodos({ limit, page }) {
+  async buscarTodos({ limit = 100, page = 1 }) {
     try {
       return await TipoProduto.findAll({
         attributes: ["id", "nome"],
