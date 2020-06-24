@@ -24,6 +24,10 @@ class ProdutoController {
   buscarTodos(req, res) {
     return ProdutoService.buscarTodos(req, res);
   }
+
+  atualizarProdutoPorCompra(req, res) {
+    return ProdutoService.atualizarProdutoPorCompra(req, res);
+  }
 }
 
 export default new ProdutoController();

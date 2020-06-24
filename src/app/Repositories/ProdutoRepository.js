@@ -48,7 +48,7 @@ class ProdutoRepository {
     }
   }
 
-  async buscarTodos({ dataFim, dataInicio, nome, tipo, limit, page }, res) {
+  async buscarTodos({ dataFim, dataInicio, nome, tipo, limit, page }) {
     try {
       const filtro = [];
       if (nome) {
@@ -77,7 +77,7 @@ class ProdutoRepository {
           },
         });
       }
-      console.log(page);
+
       const response = await Produto.findAll({
         where: filtro,
         include: [
@@ -87,7 +87,7 @@ class ProdutoRepository {
             attributes: ["nome"],
           },
         ],
-        order: ["nome"],
+        order: ["data_da_compra"],
         limit,
         offset: (page - 1) * limit,
       });

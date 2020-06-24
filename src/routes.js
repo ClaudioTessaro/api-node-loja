@@ -28,6 +28,10 @@ routes.delete("/produto/:id", ProdutoController.deletarPorId);
 routes.get("/produtos", ProdutoController.buscarPorFiltro);
 routes.put("/produto/:id", ProdutoController.atualizarProduto);
 routes.get("/todosProdutos", ProdutoController.buscarTodos);
+routes.put(
+  "/compraProduto/:nomeProduto",
+  ProdutoController.atualizarProdutoPorCompra
+);
 
 routes.post("/cliente", ClienteController.insereCliente);
 routes.get("/clientes", ClienteController.buscarClientes);

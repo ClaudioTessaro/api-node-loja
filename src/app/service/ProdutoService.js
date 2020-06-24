@@ -1,3 +1,4 @@
+/* eslint-disable no-unneeded-ternary */
 /* eslint-disable radix */
 import ProdutoRepository from "../Repositories/ProdutoRepository";
 import TipoProdutoRepository from "../Repositories/TipoProdutoRepository";
@@ -57,19 +58,19 @@ class ProdutoService {
       const quant = this.calcularQuantidadeDePotes(quantidade, tipo);
       const quantidadeDeEstoque = parseInt(quant);
 
-      const valorVenda =
-        valorDaVenda ||
-        this.calculaValorVendaProduto(
-          quantidade,
-          valorCompra,
-          porcentagemDeLucro,
-          tipo,
-          valorPote,
-          frete
-        );
-      const porcentagemLucro =
-        porcentagemDeLucro ||
-        this.calcularPorcentagemDeLucro(valorCompra, valorVenda, quantidade);
+      const valorVenda = valorDaVenda
+        ? valorDaVenda
+        : this.calculaValorVendaProduto(
+            quantidade,
+            valorCompra,
+            porcentagemDeLucro,
+            tipo,
+            valorPote,
+            frete
+          );
+      const porcentagemLucro = porcentagemDeLucro
+        ? porcentagemDeLucro
+        : this.calcularPorcentagemDeLucro(valorCompra, valorVenda, quantidade);
 
       const response = await ProdutoRepository.cadastrarProduto({
         nome,
@@ -109,20 +110,23 @@ class ProdutoService {
     const tamanhoDoPote = 120;
     let valor = 0;
     let quantidade = parseInt(quantidadeDeCompra, 10);
-    const valorFrete = frete !== "" ? frete : 0.001;
     if (tipoProduto.nome !== "Oleo Vegetal") {
+      const valorFrete = frete !== "" ? frete : 0.001;
       valor += parseFloat(valorCompra) / quantidade;
       valor +=
         parseFloat(valorFrete) / quantidade +
         valor * (parseFloat(porcentagemLucro) / 100);
     } else {
+      const valorFrete = frete !== "" ? frete : 1;
       if (quantidade < 1000) {
         quantidade *= 1000;
       }
       const precoPorUnidade = parseFloat(valorCompra) / quantidade;
       valor += parseFloat(valorPote) + tamanhoDoPote * precoPorUnidade;
-      valor += parseFloat(frete) + valor * (parseFloat(porcentagemLucro) / 100);
+      valor +=
+        parseFloat(valorFrete) + valor * (parseFloat(porcentagemLucro) / 100);
     }
+
     return parseFloat(valor).toFixed(2);
   }
 
@@ -223,6 +227,69 @@ class ProdutoService {
     } catch (err) {
       throw res.status(400).json({ error: err.message });
     }
+  }
+
+  async atualizarProdutoPorCompra(req, res) {
+    try {
+      const nome = req.params.nomeProduto;
+      const { quantidadeDeCompra, dataCompra } = req.body;
+      const dataDaCompra = dataCompra;
+      const responseProduto = await ProdutoRepository.buscarProdutoPorNome(
+        nome
+      );
+      const tipo = await TipoProdutoRepository.buscarPorPk(
+        responseProduto.tipoProduto
+      );
+
+      const quantidade = this.atualizaQuantidadeProdutoPelaCompra(
+        responseProduto,
+        quantidadeDeCompra
+      );
+      const quantidadeDeEstoque = this.atualizaQuantidadeEstoquePelaCompra(
+        responseProduto,
+        quantidadeDeCompra,
+        tipo
+      );
+      const response = await responseProduto.update({
+        dataDaCompra,
+        quantidade,
+        quantidadeDeEstoque,
+      });
+      return res.status(200).json({
+        response,
+        message: `Estoque de ${nome} atualizado com sucesso`,
+      });
+    } catch (err) {
+      throw res.status(400).json({ error: err.message });
+    }
+  }
+
+  atualizaQuantidadeProdutoPelaCompra(responseProduto, quantidadeDeCompra) {
+    return parseInt(quantidadeDeCompra) + parseInt(responseProduto.quantidade);
+  }
+
+  atualizaQuantidadeEstoquePelaCompra(
+    responseProduto,
+    quantidadeDeCompra,
+    tipo
+  ) {
+    let quantidadeEstoque = 0;
+    if (tipo.nome === "Oleo Vegetal") {
+      const tamanhoDoPote = 120;
+      if (quantidadeDeCompra < 1000) {
+        quantidadeDeCompra *= 1000;
+      }
+      const unidade = parseInt(quantidadeDeCompra, 10);
+      quantidadeEstoque =
+        responseProduto.quantidadeDeEstoque +
+        parseInt(unidade, 10) / tamanhoDoPote;
+    } else {
+      quantidadeEstoque =
+        parseInt(quantidadeDeCompra) +
+        parseInt(responseProduto.quantidadeDeEstoque);
+    }
+
+    return parseInt(quantidadeEstoque);
   }
 }
 

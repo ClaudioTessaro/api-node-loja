@@ -44,9 +44,23 @@ class ClienteRepository {
     }
   }
 
-  async buscarClientes() {
+  async buscarClientes({ limit = 20, page = 1 }) {
     try {
-      return await Cliente.findAll({ attributes: ["id", "nome", "telefone"] });
+      return await Cliente.findAll({
+        attributes: ["id", "nome", "telefone"],
+        limit,
+        offset: (page - 1) * limit,
+      });
+    } catch (err) {
+      throw new Error("Problema na base de dados");
+    }
+  }
+
+  async totalClientes() {
+    try {
+      return await Cliente.findAll({
+        attributes: ["id", "nome", "telefone"],
+      });
     } catch (err) {
       throw new Error("Problema na base de dados");
     }

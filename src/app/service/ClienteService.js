@@ -39,7 +39,11 @@ class ClienteService {
 
   async buscarClientes(req, res) {
     try {
-      const response = await ClienteRepository.buscarClientes();
+      const { limit, page } = req.query;
+      const response = await ClienteRepository.buscarClientes({ limit, page });
+      const reponseTotal = await ClienteRepository.totalClientes();
+      res.setHeader("X-Total-Count", reponseTotal.length);
+      res.setHeader("Access-Control-Expose-Headers", "X-Total-Count");
       return res.status(200).json(response);
     } catch (err) {
       throw res.status(400).json({ error: err.message });
@@ -77,7 +81,6 @@ class ClienteService {
       const cliente = await ClienteRepository.buscarClienteClientePorNome(
         req.params.nomeCliente
       );
-
       return res.status(200).json(cliente);
     } catch (err) {
       throw res.status(400).json({ error: err.message });
